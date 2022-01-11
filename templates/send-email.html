@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="{% url 'send-email' %}" method="post">
+        <textarea name="text"></textarea>
+        <input type="email" name="email" />
+        <input type="submit" value="sending" />
+        {% csrf_token %}
+    </form>
+
+{% endblock content %}
