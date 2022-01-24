@@ -16,20 +16,13 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import RedirectView
-from rest_framework.routers import SimpleRouter
-
-from books_core.views import BookViewSet
-
-router = SimpleRouter()
-
-router.register(r'book', BookViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(url='catalog/', permanent=True))
+    path('', RedirectView.as_view(url='catalog/', permanent=True)),
+    path('catalog/', include('books_core.urls')),
 ]
 
-urlpatterns += router.urls
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

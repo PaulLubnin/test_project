@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'learning_app',
+    # 'learning_app',
     'books_core'
 ]
 
