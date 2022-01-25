@@ -35,6 +35,8 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.ForeignKey('Author',
                                on_delete=models.SET_NULL,
+                               # переопределение автоматически созданного имени у модели Author
+                               related_name='book_set',
                                null=True)
     summary = models.TextField(max_length=1000,
                                help_text="Enter a brief description of the book")
