@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 
-{% block title %}<title>Тестовая страница index</title>{% endblock title%}
+{% block title %}<title>Тестовая страница index</title>{% endblock title %}
 
 {% block content %}
     <h1>Local Library Home</h1>
@@ -19,4 +19,6 @@
         <li><strong>Authors:</strong> {{ num_authors }}</li>
     </ul>
 
+    <p>You have visited this page {{ num_visits }}{% if num_visits == 1 %} time{% else %} times{% endif %}.</p>
+    
 {% endblock content %}
