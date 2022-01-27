@@ -1,9 +1,12 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render
 from django.views import generic
 
 from books_core.models import Book, BookInstance, Author
 
 
+@login_required
 def index(request):
     """
     Функция отображения для домашней страницы сайта.
@@ -29,7 +32,7 @@ def index(request):
     )
 
 
-class BookListView(generic.ListView):
+class BookListView(LoginRequiredMixin, generic.ListView):
     model = Book
     paginate_by = 2
 
@@ -63,3 +66,32 @@ class AuthorDetailView(generic.DetailView):
     #     context = super().get_context_data(**kwargs)
     #     context['book_list'] = Book.objects.filter(author=self.object)
     #     return context
+
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """
+    Generic class-based view listing books on loan to current user.
+    """
+    model = BookInstance
+    # context_object_name = 'test_name'   # переопределение контекстного имени
+    template_name = 'books_core/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['bookinstance_list'] = BookInstance.objects.filter(borrower__username=self.request.user)
+        return context
+
+
+class BorrowedBookStaffList(PermissionRequiredMixin, generic.ListView):
+    model = BookInstance
+    permission_required = 'books_core.staff_perms'
+    template_name = 'books_core/bookinstance_list_boorowed_staff.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['bookinstance_list_staff'] = BookInstance.objects.exclude(due_back=None)
+        return context
