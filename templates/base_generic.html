@@ -39,7 +39,7 @@
                     {% if perms.books_core.staff_perms and user.is_authenticated %}
                         <hr>
                         <li>Staff</li>
-                        <li><a href="{% url 'borrowed' %}">All borrowed</a></li>
+                        <li><a href="{% url 'all-borrowed' %}">All borrowed</a></li>
                     {% endif %}
                 </ul>
             {% endblock %}

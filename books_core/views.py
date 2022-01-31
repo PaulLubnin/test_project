@@ -1,8 +1,14 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render
-from django.views import generic
+import datetime
 
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.views import generic
+from django.views.generic import CreateView, UpdateView, DeleteView
+
+from books_core.forms import RenewBookModelForm
 from books_core.models import Book, BookInstance, Author
 
 
@@ -95,3 +101,47 @@ class BorrowedBookStaffList(PermissionRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context['bookinstance_list_staff'] = BookInstance.objects.exclude(due_back=None)
         return context
+
+
+@permission_required('books_core.staff_perms')
+def renew_book_librarian(request, pk):
+    book_inst = get_object_or_404(BookInstance, pk=pk)
+
+    # Если данный запрос типа POST, тогда
+    if request.method == 'POST':
+
+        # Создаём экземпляр формы и заполняем данными из запроса (связывание, binding):
+        form = RenewBookModelForm(request.POST)
+
+        # Проверка валидности данных формы:
+        if form.is_valid():
+            # Обработка данных из form.cleaned_data
+            # (здесь мы просто присваиваем их полю due_back)
+            book_inst.due_back = form.cleaned_data['renewal_date']
+            book_inst.save()
+
+            # Переход по адресу 'all-borrowed':
+            return HttpResponseRedirect(reverse('all-borrowed'))
+
+    # Если это GET (или какой-либо ещё), создать форму по умолчанию.
+    else:
+        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        form = RenewBookModelForm(initial={'renewal_date': proposed_renewal_date, })
+
+    return render(request, 'books_core/book_renew_librarian.html', {'form': form, 'bookinst': book_inst})
+
+
+class AuthorCreate(CreateView):
+    model = Author
+    fields = '__all__'
+    initial = {'date_of_death': '', }
+
+
+class AuthorUpdate(UpdateView):
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+
+
+class AuthorDelete(DeleteView):
+    model = Author
+    success_url = reverse_lazy('authors')
