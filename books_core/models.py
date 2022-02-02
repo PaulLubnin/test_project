@@ -37,7 +37,8 @@ class Book(models.Model):
     Model representing a book (but not a specific copy of a book).
     """
     title = models.CharField(
-        max_length=200
+        max_length=200,
+        help_text='Название книги',
     )
     author = models.ForeignKey(
         'Author',
@@ -53,7 +54,7 @@ class Book(models.Model):
     isbn = models.CharField(
         'ISBN',
         max_length=13,
-        help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>'
+        help_text='13 Character ISBN number'
     )
     genre = models.ManyToManyField(
         Genre,

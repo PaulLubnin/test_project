@@ -40,6 +40,9 @@
                         <hr>
                         <li>Staff</li>
                         <li><a href="{% url 'all-borrowed' %}">All borrowed</a></li>
+                        {% comment "Как передать аргумент?" %}
+                        <li><a href="{% url "renew-book-librarian" %}">Renew book</a></li>
+                        {% endcomment %}
                     {% endif %}
                 </ul>
             {% endblock %}

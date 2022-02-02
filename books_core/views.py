@@ -8,7 +8,8 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from books_core.forms import RenewBookModelForm
+# from books_core.forms import RenewBookModelForm
+from books_core.forms import RenewBookForm
 from books_core.models import Book, BookInstance, Author
 
 
@@ -105,13 +106,14 @@ class BorrowedBookStaffList(PermissionRequiredMixin, generic.ListView):
 
 @permission_required('books_core.staff_perms')
 def renew_book_librarian(request, pk):
-    book_inst = get_object_or_404(BookInstance, pk=pk)
+    book_inst = get_object_or_404(BookInstance, id=pk)
 
     # Если данный запрос типа POST, тогда
     if request.method == 'POST':
 
         # Создаём экземпляр формы и заполняем данными из запроса (связывание, binding):
-        form = RenewBookModelForm(request.POST)
+        # form = RenewBookModelForm(request.POST)
+        form = RenewBookForm(request.POST)
 
         # Проверка валидности данных формы:
         if form.is_valid():
@@ -126,7 +128,7 @@ def renew_book_librarian(request, pk):
     # Если это GET (или какой-либо ещё), создать форму по умолчанию.
     else:
         proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
-        form = RenewBookModelForm(initial={'renewal_date': proposed_renewal_date, })
+        form = RenewBookForm(initial={'renewal_date': proposed_renewal_date, })
 
     return render(request, 'books_core/book_renew_librarian.html', {'form': form, 'bookinst': book_inst})
 
@@ -145,3 +147,18 @@ class AuthorUpdate(UpdateView):
 class AuthorDelete(DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
+
+
+class BookCreate(CreateView):
+    model = Book
+    fields = '__all__'
+
+
+class BookUpdate(UpdateView):
+    model = Book
+    fields = ['title', 'author', 'summary', 'genre', 'language']
+
+
+class BookDelete(DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
