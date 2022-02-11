@@ -41,18 +41,18 @@ def index(request):
 
 class BookListView(LoginRequiredMixin, generic.ListView):
     model = Book
-    paginate_by = 2
+    paginate_by = 4
 
     def get_queryset(self):
         # Book.objects.filter(title__icontains='war')[:5]  # Получить 5 книг, содержащих 'war' в заголовке
         return Book.objects.all().order_by('title')
 
-    def get_context_data(self, **kwargs):
-        # В первую очередь получаем базовую реализацию контекста
-        context = super().get_context_data(**kwargs)
-        # Добавляем новую переменную к контексту и инициализируем её некоторым значением
-        context['book_list'] = Book.objects.all()
-        return context
+    # def get_context_data(self, **kwargs):
+    #     # В первую очередь получаем базовую реализацию контекста
+    #     context = super().get_context_data(**kwargs)
+    #     # Добавляем новую переменную к контексту и инициализируем её некоторым значением
+    #     # context['book_list'] = Book.objects.all()
+    #     return context
 
 
 class BookDetailView(generic.DetailView):
@@ -61,6 +61,7 @@ class BookDetailView(generic.DetailView):
 
 class AuthorListView(generic.ListView):
     model = Author
+    paginate_by = 3
 
     # def get_queryset(self):
     #     return Author.objects.all()
@@ -77,7 +78,7 @@ class AuthorDetailView(generic.DetailView):
 
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """
-    Generic class-based view listing books on loan to current user.
+    Обобщённый класс отображения списка взятых книг текущим пользователем
     """
     model = BookInstance
     # context_object_name = 'test_name'   # переопределение контекстного имени
@@ -105,7 +106,7 @@ class BorrowedBookStaffList(PermissionRequiredMixin, generic.ListView):
 
 
 @permission_required('books_core.staff_perms')
-def renew_book_librarian(request, pk):
+def renew_book_librarian(request, pk: int):
     book_inst = get_object_or_404(BookInstance, id=pk)
 
     # Если данный запрос типа POST, тогда

@@ -14,7 +14,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 class BooksInstanceInline(admin.TabularInline):
     model = BookInstance
-#     где то тут можно вставить атрибут extra=0 и будет выводится только одна форма
+    extra = 1
 
 
 @admin.register(Book)

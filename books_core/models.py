@@ -43,7 +43,7 @@ class Book(models.Model):
     author = models.ForeignKey(
         'Author',
         on_delete=models.SET_NULL,
-        # переопределение автоматически созданного имени у модели Author
+        # переопределение автоматически созданного имени у модели Author, лучше назвать books
         related_name='book_set',
         null=True
     )
@@ -85,6 +85,9 @@ class Book(models.Model):
         return ', '.join([genre.name for genre in self.genre.all()[:3]])
 
     display_genre.short_description = 'Genre'
+
+    # def display_language(self):
+    #     return 'pfgjhfdhgdj'
 
 
 class BookInstance(models.Model):
@@ -165,7 +168,7 @@ class Author(models.Model):
         blank=True
     )
     date_of_death = models.DateField(
-        'Died',
+        'died',
         null=True,
         blank=True
     )

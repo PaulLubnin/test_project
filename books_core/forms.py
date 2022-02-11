@@ -8,6 +8,9 @@ from books_core.models import BookInstance
 
 
 class RenewBookForm(forms.Form):
+    '''
+    Форма обновления книг для библиотекорей (дата возврата)
+    '''
     renewal_date = forms.DateField(help_text="Enter a date between now and 4 weeks (default 3). YYYY-MM-DD")
 
     def clean_renewal_date(self):
